@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: aicloud-__ENV__
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 3002
+    targetPort: 3002
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storage-service
+  namespace: aicloud-__ENV__
+spec:
+  selector:
+    app: storage-service
+  ports:
+  - port: 3003
+    targetPort: 3003
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-assistant-service
+  namespace: aicloud-__ENV__
+spec:
+  selector:
+    app: llm-assistant-service
+  ports:
+  - port: 3004
+    targetPort: 3004
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-orchestration-service
+  namespace: aicloud-__ENV__
+spec:
+  selector:
+    app: ai-orchestration-service
+  ports:
+  - port: 3005
+    targetPort: 3005
+  type: ClusterIP

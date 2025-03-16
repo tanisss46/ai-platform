@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: aicloud-__ENV__
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: aicloud/frontend:__TAG__
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: NODE_ENV
+        - name: NEXT_PUBLIC_API_URL
+          value: "https://api.__ENV__.aicloud.app"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5

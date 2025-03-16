@@ -1,0 +1,303 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-500;
+}
+
+/* Finder-like UI */
+.finder-container {
+  @apply grid bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 h-[calc(100vh-10rem)] shadow-sm;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 40px 1fr;
+  grid-template-areas:
+    "sidebar toolbar"
+    "sidebar content";
+}
+
+.finder-sidebar {
+  grid-area: sidebar;
+  @apply border-r border-slate-200 dark:border-slate-700 overflow-y-auto;
+}
+
+.finder-toolbar {
+  grid-area: toolbar;
+  @apply border-b border-slate-200 dark:border-slate-700 flex items-center px-4;
+}
+
+.finder-content {
+  grid-area: content;
+  @apply overflow-auto p-4;
+}
+
+/* File Grid View */
+.file-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4;
+}
+
+.file-grid-item {
+  @apply flex flex-col items-center p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-center;
+}
+
+.file-grid-item .icon {
+  @apply w-16 h-16 mb-2 object-cover rounded-md;
+}
+
+.file-grid-item .name {
+  @apply text-sm font-medium truncate w-full;
+}
+
+/* List View */
+.file-list {
+  @apply w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden;
+}
+
+.file-list-item {
+  @apply flex items-center py-2 px-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-slate-200 dark:border-slate-700 last:border-b-0;
+}
+
+.file-list-item .icon {
+  @apply w-6 h-6 mr-3;
+}
+
+.file-list-item .name {
+  @apply text-sm font-medium flex-1 truncate;
+}
+
+.file-list-item .info {
+  @apply text-xs text-slate-500 dark:text-slate-400 ml-auto pl-4;
+}
+
+/* App Store Style Grid */
+.app-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-6;
+}
+
+.app-card {
+  @apply flex flex-col rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow;
+}
+
+.app-card .thumbnail {
+  @apply w-full aspect-square object-cover bg-slate-100 dark:bg-slate-700;
+}
+
+.app-card .details {
+  @apply p-4;
+}
+
+.app-card .title {
+  @apply text-base font-semibold truncate;
+}
+
+.app-card .subtitle {
+  @apply text-xs text-slate-500 dark:text-slate-400 mt-1 truncate;
+}
+
+.app-card .rating {
+  @apply flex items-center mt-2 text-amber-500;
+}
+
+/* LLM Assistant Chat */
+.chat-container {
+  @apply flex flex-col h-full;
+}
+
+.chat-messages {
+  @apply flex-1 overflow-y-auto p-4 space-y-4;
+}
+
+.chat-message {
+  @apply flex items-start max-w-3xl;
+}
+
+.chat-message.user {
+  @apply ml-auto;
+}
+
+.chat-message.assistant {
+  @apply mr-auto;
+}
+
+.chat-bubble {
+  @apply rounded-xl p-3 relative;
+}
+
+.chat-message.user .chat-bubble {
+  @apply bg-primary-600 text-white;
+}
+
+.chat-message.assistant .chat-bubble {
+  @apply bg-slate-100 dark:bg-slate-800;
+}
+
+.chat-input {
+  @apply border-t border-slate-200 dark:border-slate-700 p-4;
+}
+
+/* Custom Animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Modals */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center;
+}
+
+.modal-content {
+  @apply bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-auto;
+}
+
+/* Loading Indicators */
+.loading {
+  @apply inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite];
+}
+
+.loading-lg {
+  @apply h-8 w-8 border-4;
+}
+
+/* Form Inputs */
+.form-control {
+  @apply relative rounded-md w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition duration-150 ease-in-out;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+}
+
+.form-error {
+  @apply text-xs text-red-500 mt-1;
+}
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700;
+}
+
+.btn-secondary {
+  @apply bg-secondary-600 text-white hover:bg-secondary-700;
+}
+
+.btn-outline {
+  @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+}
+
+.btn-ghost {
+  @apply hover:bg-accent hover:text-accent-foreground;
+}
+
+.btn-sm {
+  @apply h-8 px-3 text-xs;
+}
+
+.btn-md {
+  @apply h-10 px-4 py-2;
+}
+
+.btn-lg {
+  @apply h-12 px-6 text-base;
+}
+
+/* Tooltips */
+.tooltip {
+  @apply absolute z-10 px-2 py-1 text-xs font-medium text-white bg-black rounded shadow-sm dark:bg-white dark:text-black invisible opacity-0 transition-opacity group-hover:visible group-hover:opacity-100;
+}
+
+/* Badge */
+.badge {
+  @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+}
+
+.badge-primary {
+  @apply border-transparent bg-primary-500 text-primary-foreground hover:bg-primary-600;
+}
+
+.badge-secondary {
+  @apply border-transparent bg-secondary-500 text-secondary-foreground hover:bg-secondary-600;
+}
+
+.badge-outline {
+  @apply border-current text-foreground;
+}

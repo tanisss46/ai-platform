@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-assistant-service
+  namespace: aicloud-__ENV__
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: llm-assistant-service
+  template:
+    metadata:
+      labels:
+        app: llm-assistant-service
+    spec:
+      containers:
+      - name: llm-assistant-service
+        image: aicloud/llm-assistant-service:__TAG__
+        ports:
+        - containerPort: 3004
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: NODE_ENV
+        - name: PORT
+          value: "3004"
+        - name: MONGODB_URI
+          value: "mongodb://$(MONGODB_HOST):$(MONGODB_PORT)/aicloud_llm"
+        - name: MONGODB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: MONGODB_HOST
+        - name: MONGODB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: MONGODB_PORT
+        - name: REDIS_URL
+          value: "redis://$(REDIS_HOST):$(REDIS_PORT)"
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: REDIS_PORT
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: aicloud-secrets
+              key: JWT_SECRET
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aicloud-secrets
+              key: OPENAI_API_KEY
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aicloud-secrets
+              key: ANTHROPIC_API_KEY
+        - name: AI_ORCHESTRATION_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: aicloud-config
+              key: AI_ORCHESTRATION_SERVICE_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3004
+          initialDelaySeconds: 5
+          periodSeconds: 5

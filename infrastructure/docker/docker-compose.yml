@@ -1,0 +1,214 @@
+version: '3.8'
+
+services:
+  # Frontend
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../infrastructure/docker/frontend/Dockerfile
+    container_name: aicloud-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api-gateway
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ../../backend/api-gateway
+      dockerfile: ../../infrastructure/docker/backend/api-gateway.Dockerfile
+    container_name: aicloud-api-gateway
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../../backend/api-gateway:/app
+      - /app/node_modules
+    depends_on:
+      - user-service
+      - storage-service
+      - llm-assistant-service
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - USER_SERVICE_URL=http://user-service:3002
+      - STORAGE_SERVICE_URL=http://storage-service:3003
+      - LLM_ASSISTANT_SERVICE_URL=http://llm-assistant-service:3004
+      - AI_ORCHESTRATION_SERVICE_URL=http://ai-orchestration-service:3005
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3006
+
+  # User Service
+  user-service:
+    build:
+      context: ../../backend/user-service
+      dockerfile: ../../infrastructure/docker/backend/user-service.Dockerfile
+    container_name: aicloud-user-service
+    ports:
+      - "3002:3002"
+    volumes:
+      - ../../backend/user-service:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aicloud_users
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-secret-key-here
+      - JWT_EXPIRES_IN=1d
+
+  # Storage Service
+  storage-service:
+    build:
+      context: ../../backend/storage-service
+      dockerfile: ../../infrastructure/docker/backend/storage-service.Dockerfile
+    container_name: aicloud-storage-service
+    ports:
+      - "3003:3003"
+    volumes:
+      - ../../backend/storage-service:/app
+      - /app/node_modules
+      - ./storage_data:/app/storage
+    depends_on:
+      - mongodb
+      - minio
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - MONGODB_URI=mongodb://mongodb:27017/aicloud_storage
+      - STORAGE_TYPE=s3
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=minioadmin
+      - S3_SECRET_KEY=minioadmin
+      - S3_BUCKET=aicloud
+      - LOCAL_STORAGE_PATH=/app/storage
+
+  # LLM Assistant Service
+  llm-assistant-service:
+    build:
+      context: ../../backend/llm-assistant-service
+      dockerfile: ../../infrastructure/docker/backend/llm-assistant-service.Dockerfile
+    container_name: aicloud-llm-assistant
+    ports:
+      - "3004:3004"
+    volumes:
+      - ../../backend/llm-assistant-service:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mongodb
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - MONGODB_URI=mongodb://mongodb:27017/aicloud_llm
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=your-openai-api-key
+      - ANTHROPIC_API_KEY=your-anthropic-api-key
+
+  # AI Orchestration Service
+  ai-orchestration-service:
+    build:
+      context: ../../backend/ai-orchestration-service
+      dockerfile: ../../infrastructure/docker/backend/ai-orchestration-service.Dockerfile
+    container_name: aicloud-ai-orchestration
+    ports:
+      - "3005:3005"
+    volumes:
+      - ../../backend/ai-orchestration-service:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mongodb
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - MONGODB_URI=mongodb://mongodb:27017/aicloud_orchestration
+      - REDIS_URL=redis://redis:6379
+      - STORAGE_SERVICE_URL=http://storage-service:3003
+      - MIDJOURNEY_API_KEY=your-midjourney-api-key
+      - STABLE_DIFFUSION_API_KEY=your-stable-diffusion-api-key
+      - KLING_AI_API_KEY=your-kling-ai-api-key
+      - MMAUDIO_API_KEY=your-mmaudio-api-key
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ../../backend/notification-service
+      dockerfile: ../../infrastructure/docker/backend/notification-service.Dockerfile
+    container_name: aicloud-notification
+    ports:
+      - "3006:3006"
+    volumes:
+      - ../../backend/notification-service:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - REDIS_URL=redis://redis:6379
+      - SMTP_HOST=smtp.mailtrap.io
+      - SMTP_PORT=2525
+      - SMTP_USER=your-smtp-user
+      - SMTP_PASS=your-smtp-pass
+      - EMAIL_FROM=noreply@aicloud.com
+
+  # PostgreSQL
+  postgres:
+    image: postgres:14-alpine
+    container_name: aicloud-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=aicloud_users
+
+  # MongoDB
+  mongodb:
+    image: mongo:5
+    container_name: aicloud-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=aicloud
+
+  # Redis
+  redis:
+    image: redis:6-alpine
+    container_name: aicloud-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # MinIO (S3 compatible storage)
+  minio:
+    image: minio/minio
+    container_name: aicloud-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  redis_data:
+  minio_data:
