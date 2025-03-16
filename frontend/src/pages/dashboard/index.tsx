@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { NextPageWithLayout } from '@/pages/_app';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import Head from 'next/head';
@@ -14,7 +15,7 @@ import CreditUsage from '@/components/dashboard/CreditUsage';
 import ActiveJobs from '@/components/dashboard/ActiveJobs';
 import RecentCompletedJobs from '@/components/dashboard/RecentCompletedJobs';
 
-export default function Dashboard() {
+const Dashboard: NextPageWithLayout = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
@@ -61,7 +62,7 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
-            Welcome back, {user?.displayName || 'User'}
+            Welcome back, {user?.name || 'User'}
           </p>
         </div>
 
@@ -99,3 +100,5 @@ export default function Dashboard() {
 Dashboard.getLayout = (page: React.ReactElement) => (
   <DashboardLayout>{page}</DashboardLayout>
 );
+
+export default Dashboard;

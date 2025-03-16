@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGetFoldersQuery } from '../../store/api/storageApi';
+import { Folder } from '../../store/api/apiSlice';
 
-interface Folder {
+interface FolderItem {
   id: string;
   name: string;
   parentId?: string;
@@ -31,7 +32,7 @@ const FolderList: React.FC<FolderListProps> = ({ currentFolderId, onFolderClick 
   useEffect(() => {
     if (currentFolderId !== 'root') {
       // Find the current folder
-      const currentFolder = rootFolders.find(f => f.id === currentFolderId);
+      const currentFolder = rootFolders.find((f: Folder) => f.id === currentFolderId);
       
       // If it has a parent, expand that parent
       if (currentFolder?.parentId) {
@@ -59,7 +60,7 @@ const FolderList: React.FC<FolderListProps> = ({ currentFolderId, onFolderClick 
     });
   };
   
-  const renderFolderItem = (folder: Folder, depth: number = 0) => {
+  const renderFolderItem = (folder: FolderItem, depth: number = 0) => {
     const isExpanded = expandedFolders.has(folder.id);
     const isSelected = folder.id === currentFolderId;
     const hasChildren = folder.childCount > 0;
@@ -156,7 +157,7 @@ const FolderList: React.FC<FolderListProps> = ({ currentFolderId, onFolderClick 
       {isRootLoading ? (
         <div className="p-3 text-gray-500">Loading folders...</div>
       ) : (
-        rootFolders.map(folder => renderFolderItem(folder))
+        rootFolders.map((folder: Folder) => renderFolderItem(folder, 0))
       )}
     </div>
   );
@@ -194,7 +195,7 @@ const ChildFolders: React.FC<{
   
   return (
     <div>
-      {childFolders.map(folder => {
+      {childFolders.map((folder: Folder) => {
         const isExpanded = expandedFolders.has(folder.id);
         const isSelected = folder.id === currentFolderId;
         const hasChildren = folder.childCount > 0;

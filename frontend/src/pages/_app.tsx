@@ -1,6 +1,17 @@
 import { Provider as ReduxProvider } from 'react-redux';
+import { NextPage } from 'next';
+import { ReactElement, ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
+
+// Define types for pages with layouts
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { store } from '@/store/store';
@@ -18,7 +29,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
@@ -37,7 +48,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <QueryClientProvider client={queryClient}>
           <ReduxProvider store={store}>
             <ThemeProvider>
-              <Component {...pageProps} />
+              {Component.getLayout ? (
+                Component.getLayout(<Component {...pageProps} />)
+              ) : (
+                <Component {...pageProps} />
+              )}
             </ThemeProvider>
           </ReduxProvider>
         </QueryClientProvider>

@@ -9,11 +9,14 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Install next globally to ensure it's available
+RUN npm install -g next
+
+# We'll build the application during dev, not in the Dockerfile
+# This helps with development
 
 # Expose the port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "run", "start"]
+# Start the development server
+CMD ["npm", "run", "dev"]

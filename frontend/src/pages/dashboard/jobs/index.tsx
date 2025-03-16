@@ -1,9 +1,11 @@
 import React from 'react';
+import type { ReactElement } from 'react';
+import { NextPageWithLayout } from '@/pages/_app';
 import Head from 'next/head';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import JobsList from '@/components/jobs/JobsList';
 
-const JobsPage: React.FC = () => {
+const JobsPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>

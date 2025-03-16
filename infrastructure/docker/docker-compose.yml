@@ -3,9 +3,10 @@ version: '3.8'
 services:
   # Frontend
   frontend:
-    build:
+    build: 
       context: ../../frontend
       dockerfile: ../infrastructure/docker/frontend/Dockerfile
+    command: npm run dev
     container_name: aicloud-frontend
     ports:
       - "3000:3000"

@@ -37,7 +37,10 @@ interface ToolParameter {
   acceptedFileTypes?: string[];
 }
 
-export default function ToolDetail() {
+import { NextPageWithLayout } from '@/pages/_app';
+import type { ReactElement } from 'react';
+
+const ToolDetail: NextPageWithLayout = () => {
   const router = useRouter();
   const { id } = router.query;
   
@@ -953,3 +956,9 @@ The output models are optimized for practical use and can be exported in standar
     </DashboardLayout>
   );
 }
+
+ToolDetail.getLayout = (page: React.ReactElement) => (
+  <DashboardLayout>{page}</DashboardLayout>
+);
+
+export default ToolDetail;

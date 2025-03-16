@@ -20,7 +20,10 @@ interface AiTool {
   samples?: string[];
 }
 
-export default function ToolsPage() {
+import { NextPageWithLayout } from '@/pages/_app';
+import type { ReactElement } from 'react';
+
+const ToolsPage: NextPageWithLayout = () => {
   const router = useRouter();
   const [tools, setTools] = useState<AiTool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -535,3 +538,9 @@ export default function ToolsPage() {
     </DashboardLayout>
   );
 }
+
+ToolsPage.getLayout = (page: React.ReactElement) => (
+  <DashboardLayout>{page}</DashboardLayout>
+);
+
+export default ToolsPage;

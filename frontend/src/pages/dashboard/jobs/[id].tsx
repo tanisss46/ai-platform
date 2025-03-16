@@ -1,11 +1,13 @@
 import React from 'react';
+import type { ReactElement } from 'react';
+import { NextPageWithLayout } from '@/pages/_app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import JobDetail from '@/components/jobs/JobDetail';
 import { useGetJobQuery } from '@/store/api/apiSlice';
 
-const JobDetailPage: React.FC = () => {
+const JobDetailPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data: job } = useGetJobQuery(id as string, {
