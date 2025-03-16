@@ -291,13 +291,13 @@
 }
 
 .badge-primary {
-  @apply border-transparent bg-primary-500 text-primary-foreground hover:bg-primary-600;
+  @apply border-transparent bg-primary-500 text-white hover:bg-primary-600;
 }
 
 .badge-secondary {
-  @apply border-transparent bg-secondary-500 text-secondary-foreground hover:bg-secondary-600;
+  @apply border-transparent bg-secondary-500 text-white hover:bg-secondary-600;
 }
 
 .badge-outline {
-  @apply border-current text-foreground;
+  @apply border-current text-gray-900;
 }
