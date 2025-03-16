@@ -261,7 +261,7 @@
 }
 
 .btn-outline {
-  @apply border border-input bg-white hover:bg-gray-100 hover:text-gray-900;
+  @apply border border-gray-300 bg-white hover:bg-gray-100 hover:text-gray-900;
 }
 
 .btn-ghost {
