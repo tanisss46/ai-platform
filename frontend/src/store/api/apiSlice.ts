@@ -97,6 +97,16 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Jobs'],
     }),
+    
+    // LLM Command endpoint
+    createLlmCommand: builder.mutation({
+      query: (commandData) => ({
+        url: '/llm/command',
+        method: 'POST',
+        body: commandData,
+      }),
+      invalidatesTags: ['Jobs'],
+    }),
   }),
 });
 
@@ -111,4 +121,5 @@ export const {
   useGetJobQuery,
   useCreateJobMutation,
   useCancelJobMutation,
+  useCreateLlmCommandMutation,
 } = apiSlice;
