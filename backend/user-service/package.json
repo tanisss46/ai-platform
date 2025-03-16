@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "User management service for AI Platform",
   "main": "src/index.ts",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

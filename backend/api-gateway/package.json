@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "API Gateway for AI Platform",
   "main": "dist/main.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
