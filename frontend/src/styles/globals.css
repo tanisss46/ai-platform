@@ -51,10 +51,10 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-gray-900;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -249,7 +249,7 @@
 
 /* Buttons */
 .btn {
-  @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
 }
 
 .btn-primary {
@@ -261,11 +261,11 @@
 }
 
 .btn-outline {
-  @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  @apply border border-input bg-white hover:bg-gray-100 hover:text-gray-900;
 }
 
 .btn-ghost {
-  @apply hover:bg-accent hover:text-accent-foreground;
+  @apply hover:bg-gray-100 hover:text-gray-900;
 }
 
 .btn-sm {
