@@ -13,45 +13,42 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
   
-  // Use compression for responses
+  // Security and optimization middleware
+  app.use(helmet());
   app.use(compression());
   
-  // Use helmet for security headers
-  app.use(helmet());
+  // Global validation pipe
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }));
   
-  // Enable validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
-  
-  // Set global prefix
+  // API prefix
   app.setGlobalPrefix('api');
   
-  // Setup Swagger documentation
+  // Swagger documentation setup
   const config = new DocumentBuilder()
     .setTitle('AICloud API')
-    .setDescription('The AICloud platform API documentation')
+    .setDescription('The AICloud API Gateway')
     .setVersion('1.0')
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management endpoints')
-    .addTag('storage', 'Storage and file management endpoints')
-    .addTag('llm', 'LLM assistant endpoints')
-    .addTag('ai', 'AI orchestration endpoints')
     .addBearerAuth()
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('users', 'User management')
+    .addTag('storage', 'Storage and file management')
+    .addTag('ai', 'AI tools and models')
+    .addTag('health', 'Health checks')
     .build();
-  
+    
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
   
-  // Get port from env or use default
-  const port = configService.get<number>('PORT', 3001);
-  
+  // Start the server
+  const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
-  console.log(`API Gateway is running on port ${port}`);
+  
+  console.log(`API Gateway is running on: http://localhost:${port}`);
+  console.log(`Swagger documentation is available at: http://localhost:${port}/api/docs`);
 }
 
 bootstrap();

@@ -1,0 +1,175 @@
+# AICloud Platform - Kapsamlı Proje Durumu ve Stratejik Yol Haritası
+
+## 1. Platform Vizyonu ve Temel Özellikleri
+
+AICloud, yapay zeka araçlarını demokratikleştiren, her seviyedeki kullanıca kolay erişim sağlayan entegre bir ekosistemdir. Platformumuz, AI teknolojilerini bulut tabanlı, sezgisel bir ortamda birleştirerek yaratıcılığı ve üretkenliği maksimize etmeyi amaçlar.
+
+### Benzersiz Değer Önerisi
+- **Tek Asistanla Çoklu AI Entegrasyonu**: Kullanıcılar seçilebilir AI asistanlar (Claude veya OpenAI gibi) aracılığıyla tüm AI modellerine erişebilir
+- **Sıfır İndirme/Kurulum**: Tüm içerikler bulutta saklanır, yerel kurulum gerektirmez
+- **Finder Benzeri Arayüz**: Mac Finder benzeri sezgisel dosya ve içerik yönetimi
+- **Kesintisiz İş Akışları**: "Stable Diffusion ile resim oluştur, sonra MMAudio ile ses ekle" gibi doğal dil komutlarıyla zincirleme işlemler
+
+## 2. Mevcut Prototip Özellikleri
+
+Ekran görüntülerinden anlaşıldığı üzere mevcut prototip şu özellikleri içermektedir:
+- Bulut dosya depolama ve yönetim sistemi (Görsel 1)
+- AI asistan entegrasyonu ve doğal dil komut işleme (Görsel 2)
+- Kategorilere ayrılmış AI araçları galerisi (Görsel 3)
+- Tema tercihleri ve erişilebilirlik ayarları (Görsel 2)
+- Dosya önizleme ve organizasyon yapısı (Görsel 1)
+
+## 3. Teknik Altyapı ve Mimari
+
+### 3.1 Cloud Storage Sistemi (Öncelikli Odak Alanı)
+- **Nesne Depolama Yapısı**: S3 uyumlu (MinIO, AWS S3) multi-tier depolama
+- **Metadata Veritabanı**: MongoDB ile zengin metadata ve indeksleme
+- **Hiyerarşik Klasör Yapısı**: Fiziksel organizasyon değil, meta-veri tabanlı dosya-klasör ilişkileri
+- **Versiyonlama**: Değişiklikleri kaydetme ve geri alma yeteneği
+- **Akıllı Arama**: İçerik tabanlı ve metaveri tabanlı gelişmiş arama özellikleri
+
+### 3.2 AI Asistan Entegrasyonu
+- **LLM Orchestrator**: Claude, GPT vb. farklı LLM asistanları tercih edilebilir
+- **Model-Agnostik Arayüz**: Asistan değişse bile tutarlı kullanıcı deneyimi
+- **API Adaptör Katmanı**: Tüm AI modellerini standartlaştırılmış API yapısına bağlama
+- **İş Akışı Motoru**: Doğal dil komutlarını işlem adımlarına dönüştürme
+- **Bağlam Farkındalığı**: Asistanın mevcut dosya sistemine ve içeriklere erişimi
+
+### 3.3 Microservice Mimarisi
+- **API Gateway**: Tüm servisler için merkezi erişim noktası
+- **Kullanıcı Servisi**: Kimlik doğrulama, yetkilendirme ve profil yönetimi
+- **Storage Servisi**: Dosya yükleme, indirme, önizleme ve yönetimi
+- **AI Orchestration Servisi**: AI modellerini birbirine bağlama ve iş akışı yönetimi
+- **Asistan Servisi**: LLM asistanlar ve doğal dil işleme
+
+## 4. Teknoloji Yığını ve Kullandığımız Araçlar
+
+### 4.1 Backend
+- **Framework**: NestJS ve TypeScript (Strongly-typed API'ler için)
+- **Database**:
+  - MongoDB: İçerik meta verileri ve hiyerarşik yapı
+  - PostgreSQL: Kullanıcı yönetimi ve ilişkisel veriler
+  - Redis: Önbellekleme ve oturum yönetimi
+- **Storage**:
+  - MinIO (Geliştirme) / AWS S3 (Üretim): Nesne depolama
+  - AWS CloudFront / Cloudflare: CDN dağıtımı
+- **Messaging**: RabbitMQ (servisler arası iletişim için)
+- **Container Orchestration**: Docker ve Kubernetes
+
+### 4.2 Frontend
+- **Framework**: Next.js 14+ (React 18+)
+- **State Management**: Redux Toolkit + RTK Query
+- **UI Library**: TailwindCSS + shadcn/ui
+- **API Communication**: TanStack Query v5
+- **File Management**:
+  - react-dropzone: Dosya yükleme
+  - react-file-viewer: Farklı dosya formatlarını önizleme
+
+### 4.3 DevOps & İzleme
+- **CI/CD**: GitHub Actions ile otomatik test ve dağıtım
+- **Infrastructure as Code**: Terraform ile bulut kaynak yönetimi
+- **Logging & Monitoring**: 
+  - ELK Stack (Elasticsearch, Logstash, Kibana)
+  - Prometheus + Grafana
+- **Error Tracking**: Sentry
+
+## 5. Geliştirme Süreci ve Metodolojimiz
+
+### 5.1 Agile Yaklaşım
+- 2 haftalık sprint döngüleri
+- Günlük standup toplantıları
+- Sprint planlama, retrospektif ve demo toplantıları
+- Jira ile sprint ve görev yönetimi
+
+### 5.2 Test Stratejisi
+- Unit Testing: Jest, Supertest
+- Integration Testing: Cypress
+- End-to-End Testing: Playwright
+- Performance Testing: JMeter, k6
+
+### 5.3 Code Quality
+- ESLint ve Prettier ile kod standardizasyonu
+- SonarQube ile statik kod analizi
+- PR inceleme süreci ve kod kalitesi kontrolleri
+- Husky ve Git hooks ile otomatik kontroller
+
+## 6. Gerçekleştirilen ve Planlanan İşler (Checklist)
+
+### 6.1 Birinci Öncelik: Cloud Storage ve Altyapı (Tamamlanıyor)
+- [x] Storage servis mimarisi
+- [x] Dosya yükleme/indirme API'leri
+- [x] Klasör yönetimi 
+- [x] Dosya metadata yönetimi
+- [x] Thumbnail ve önizleme oluşturma
+- [x] Paylaşım ve izin yönetimi
+- [ ] Arama ve filtreleme
+- [ ] Dosya versiyonlama
+- [ ] Çöp kutusu ve geri yükleme
+
+### 6.2 İkinci Öncelik: AI Asistan Entegrasyonu
+- [x] Temel asistan arayüzü
+- [x] LLM bağlantı katmanı
+- [ ] Asistan dosya erişimi
+- [ ] Çoklu asistan desteği (Claude, GPT)
+- [ ] Doğal dil komut işleme
+- [ ] İş akışı yorumlama
+- [ ] Platform fonksiyonları için izinler
+
+### 6.3 Üçüncü Öncelik: AI Model Adaptörleri
+- [ ] Model adaptör mimarisi
+- [ ] Stable Diffusion entegrasyonu
+- [ ] MMAudio entegrasyonu
+- [ ] Midjourney entegrasyonu
+- [ ] Kling AI video entegrasyonu
+- [ ] Model parametresi standardizasyonu
+- [ ] İş akışı zinciri tasarımı
+
+### 6.4 Dördüncü Öncelik: Frontend ve UX
+- [x] Finder benzeri arayüz
+- [x] Tema ve kişiselleştirme
+- [ ] Kapsamlı önizleme desteği
+- [ ] Dosya işlem geçmişi
+- [ ] Sürükle-bırak desteği
+- [ ] Gelişmiş görünüm seçenekleri
+- [ ] Mobil uyumluluk
+
+## 7. Projede Kullanılan Kaynaklar ve Referanslar
+
+### 7.1 Teknik Kaynaklar
+- **NestJS Dokümantasyonu**: https://docs.nestjs.com/
+- **Next.js Dokümantasyonu**: https://nextjs.org/docs
+- **MongoDB Dokümantasyonu**: https://docs.mongodb.com/
+- **MinIO Rehberi**: https://docs.min.io/
+- **Kubernetes Rehberi**: https://kubernetes.io/docs/home/
+- **Docker Dokümantasyonu**: https://docs.docker.com/
+- **AWS S3 Referansı**: https://docs.aws.amazon.com/s3/
+
+### 7.2 Araştırma Kaynakları
+- **AI Model Entegrasyonları**: OpenAI API, Stability AI belgeler, Midjourney API (beta)
+- **UX/UI Tasarım İlkeleri**: Apple Human Interface Guidelines, Material Design
+- **Cloud Mimarisi**: AWS Well-Architected Framework, Azure Architecture Center
+
+### 7.3 Açık Kaynak Kütüphaneleri
+- **shadcn/ui**: UI bileşenleri için
+- **TailwindCSS**: CSS framework olarak
+- **Sharp**: Görüntü işleme için
+- **FFmpeg**: Video ve ses dönüştürme için
+- **PDF.js**: PDF önizleme için
+
+## 8. Yakın Vadeli Öncelikler ve Eylem Planı
+
+### 8.1 Önümüzdeki 4 Hafta
+1. **Storage Servisi**: Kalan tüm dosya yönetim özellikleri tamamlanacak
+2. **Asistan Entegrasyonu**: Dosya erişimi ve komut işleme yetenekleri geliştirilecek
+3. **İlk AI Model Adaptörleri**: Stable Diffusion ve MMAudio entegrasyonları
+4. **Altyapı İyileştirmeleri**: Ölçeklenebilirlik ve performans optimizasyonları
+
+### 8.2 Önümüzdeki 3 Ay
+1. **İlk Beta Sürümü**: Sınırlı kullanıcı grubuna erişim
+2. **10+ AI Model Entegrasyonu**: En popüler modellerin sisteme dahil edilmesi
+3. **İş Akışı Editörü**: Görsel olarak AI modelleri zincirleyebilme
+4. **Gelişmiş Analitikler**: Kullanım, performans ve maliyet izleme
+
+---
+
+Bu yol haritası ve platform mimarisi, AICloud'un merkezi veri depolama ve AI orkestrasyonu üzerine kurulu benzersiz değer önerisini yansıtmaktadır. Bulut tabanlı depolama altyapımız ve tek asistanla çoklu AI modeli entegrasyonu, platformumuzu rakiplerden ayıran temel özelliklerimizdir. Geliştirme sürecimiz, öncelikle bu temel özellik üzerine odaklanacak, sonrasında AI model adaptörlerini ve gelişmiş iş akışı yeteneklerini ekleyecektir.

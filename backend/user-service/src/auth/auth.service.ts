@@ -1,4 +1,33 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+
+  /**
+   * Login with 2FA code after initial login
+   */
+  async loginWith2fa(loginWith2faDto: LoginWith2faDto): Promise<AuthResponseDto> {
+    const { userId, twoFactorCode } = loginWith2faDto;
+    
+    // Verify the 2FA code
+    try {
+      const isValid = await this.twoFactorAuthService.verifyTwoFactorAuthToken(userId, twoFactorCode);
+      
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid two-factor authentication code');
+      }
+      
+      // Get the user
+      const user = await this.usersService.findById(userId);
+      
+      // Update last login timestamp
+      await this.usersService.updateLastLogin(user.id);
+      
+      // Generate a token and return auth response
+      return this.createAuthResponse(user);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Invalid two-factor authentication code');
+    }
+  }import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -6,6 +35,9 @@ import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
+import { AuthResponseWithTwoFactorDto } from './dto/auth-response-with-2fa.dto';
+import { LoginWith2faDto } from './dto/two-factor/login-with-2fa.dto';
+import { TwoFactorAuthService } from './two-factor/two-factor-auth.service';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -24,6 +56,8 @@ export class AuthService {
     @InjectRepository(PasswordResetToken)
     private passwordResetTokenRepository: Repository<PasswordResetToken>,
     @Inject('NOTIFICATION_SERVICE') private notificationClient: ClientProxy,
+    @Inject(forwardRef(() => TwoFactorAuthService))
+    private readonly twoFactorAuthService: TwoFactorAuthService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -43,7 +77,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+  async login(loginDto: LoginDto): Promise<AuthResponseDto | AuthResponseWithTwoFactorDto> {
     const { email, password } = loginDto;
     
     // Validate user credentials
@@ -53,6 +87,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
     
+    // Check if 2FA is enabled for this user
+    const isTwoFactorAuthEnabled = await this.twoFactorAuthService.isTwoFactorAuthEnabled(user.id);
+    
+    if (isTwoFactorAuthEnabled) {
+      // If 2FA is enabled, don't generate a token yet. Return a response indicating 2FA is required.
+      return new AuthResponseWithTwoFactorDto({
+        isTwoFactorRequired: true,
+        userId: user.id,
+      });
+    }
+    
+    // If 2FA is not enabled, proceed with normal login
     // Update last login timestamp
     await this.usersService.updateLastLogin(user.id);
     

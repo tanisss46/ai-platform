@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TerminusModule } from '@nestjs/terminus';
-import { HttpModule } from '@nestjs/axios';
-import { ConfigModule } from '@nestjs/config';
 import { HealthController } from './health.controller';
+import { ProxyModule } from '../proxy/proxy.module';
 
 @Module({
-  imports: [
-    TerminusModule,
-    HttpModule,
-    ConfigModule,
-  ],
+  imports: [ProxyModule],
   controllers: [HealthController],
 })
 export class HealthModule {}

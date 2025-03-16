@@ -1,4 +1,5 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { CacheModule } from './cache/cache.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ProxyModule } from './proxy/proxy.module';
@@ -13,6 +14,9 @@ import { LoggingMiddleware } from './middleware/logging.middleware';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+    
+    // Cache module
+    CacheModule,
     
     // JWT for authentication
     JwtModule.registerAsync({

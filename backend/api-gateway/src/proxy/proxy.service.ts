@@ -1,4 +1,5 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { CacheService } from '../cache/cache.service';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
@@ -6,7 +7,12 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 export class ProxyService {
   private serviceRegistry: Record<string, string>;
 
-  constructor(private configService: ConfigService) {
+  private readonly logger = new Logger(ProxyService.name);
+
+  constructor(
+    private configService: ConfigService,
+    private cacheService: CacheService,
+  ) {
     // Initialize service registry with microservice URLs
     this.serviceRegistry = {
       'users': this.configService.get<string>('USER_SERVICE_URL') || 'http://localhost:3001',
@@ -21,6 +27,7 @@ export class ProxyService {
 
   /**
    * Forward a request to the appropriate microservice
+   * Caches GET requests for improved performance
    */
   async forwardRequest(
     service: string,
@@ -62,11 +69,36 @@ export class ProxyService {
     delete config.headers.cookie;
     
     try {
+      // Generate cache key for GET requests
+      const shouldCache = method.toLowerCase() === 'get';
+      const cacheKey = shouldCache
+        ? `proxy:${service}:${path}:${JSON.stringify(query)}:${user?.id || 'anonymous'}`
+        : null;
+      
+      // Try to get from cache for GET requests
+      if (shouldCache) {
+        const cachedResponse = await this.cacheService.get(cacheKey);
+        if (cachedResponse) {
+          this.logger.debug(`Cache hit for ${service}/${path}`);
+          return cachedResponse;
+        }
+      }
+      
+      // Forward the request
       const response: AxiosResponse = await axios(config);
-      return {
+      const result = {
         statusCode: response.status,
         data: response.data,
       };
+      
+      // Cache GET responses
+      if (shouldCache && cacheKey) {
+        // Cache for 30 seconds by default
+        const cacheTtl = 30;
+        await this.cacheService.set(cacheKey, result, cacheTtl);
+      }
+      
+      return result;
     } catch (error) {
       if (error.response) {
         // The request was made and the server responded with a status code

@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '@/store/slices/authSlice';
 import { useTheme } from '@/context/ThemeContext';
+import { useLoginMutation } from '@/store/api/apiSlice';
 
 export default function Login() {
   const router = useRouter();
@@ -24,6 +25,9 @@ export default function Login() {
     }
   }, [router, redirect]);
 
+  // Use the login mutation hook from RTK Query
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -37,37 +41,22 @@ export default function Login() {
     }
 
     try {
-      // In a real app, you would make an API call here
-      // For now, we'll simulate a successful login with mock data
+      // Call the actual login API endpoint
+      const result = await login({ email, password }).unwrap();
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Set credentials in Redux store and localStorage
+      dispatch(setCredentials({
+        user: result.user,
+        token: result.accessToken
+      }));
       
-      // Mock successful login
-      if (email === 'demo@example.com' && password === 'password') {
-        const mockUserData = {
-          user: {
-            id: 'user-1',
-            email: 'demo@example.com',
-            name: 'Demo User',
-            role: 'user',
-            credits: 100,
-            subscriptionTier: 'pro',
-            subscriptionStatus: 'active'
-          },
-          token: 'mock-jwt-token-xyz123'
-        };
-        
-        // Set credentials in Redux store and localStorage
-        dispatch(setCredentials(mockUserData));
-        
-        // Redirect to dashboard or the original requested page
-        router.push(typeof redirect === 'string' ? redirect : '/dashboard');
-      } else {
-        setErrorMessage('Invalid email or password');
-      }
-    } catch (error) {
-      setErrorMessage('Failed to login. Please try again.');
+      // Redirect to dashboard or the original requested page
+      router.push(typeof redirect === 'string' ? redirect : '/dashboard');
+      
+    } catch (error: any) {
+      // Handle different API error responses
+      const errorMessage = error.data?.message || 'Failed to login. Please try again.';
+      setErrorMessage(errorMessage);
       console.error('Login error:', error);
     }
     
@@ -188,9 +177,9 @@ export default function Login() {
                     <button
                       type="submit"
                       className="w-full btn btn-primary"
-                      disabled={isLoading}
+                      disabled={isLoading || isLoginLoading}
                     >
-                      {isLoading ? (
+                      {(isLoading || isLoginLoading) ? (
                         <div className="flex items-center justify-center">
                           <div className="loading mr-2"></div>
                           Logging in...
@@ -215,17 +204,20 @@ export default function Login() {
                 </div>
 
                 {/* Demo Credentials */}
-                <div className="mt-8 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-md border border-slate-200 dark:border-slate-700">
-                  <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
-                    Demo Credentials
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                    Email: <span className="font-medium text-slate-700 dark:text-slate-300">demo@example.com</span>
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Password: <span className="font-medium text-slate-700 dark:text-slate-300">password</span>
-                  </p>
-                </div>
+                {/* Only show demo credentials in development mode */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="mt-8 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-md border border-slate-200 dark:border-slate-700">
+                    <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-2">
+                      Demo Credentials
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                      Email: <span className="font-medium text-slate-700 dark:text-slate-300">demo@example.com</span>
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Password: <span className="font-medium text-slate-700 dark:text-slate-300">password</span>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -1,3 +1,11 @@
+  @Post('login/2fa')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Complete login with two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'Two-factor authentication successful', type: AuthResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid two-factor authentication code' })
+  async loginWith2fa(@Body() loginWith2faDto: LoginWith2faDto): Promise<AuthResponseDto> {
+    return this.authService.loginWith2fa(loginWith2faDto);
+  }
 import {
   Controller,
   Post,
@@ -9,13 +17,15 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
+import { AuthResponseWithTwoFactorDto } from './dto/auth-response-with-2fa.dto';
+import { LoginWith2faDto } from './dto/two-factor/login-with-2fa.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 
@@ -38,8 +48,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log in with email and password' })
   @ApiResponse({ status: 200, description: 'User successfully logged in', type: AuthResponseDto })
+  @ApiResponse({ status: 200, description: 'Two-factor authentication required', type: AuthResponseWithTwoFactorDto })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto | AuthResponseWithTwoFactorDto> {
     return this.authService.login(loginDto);
   }
 

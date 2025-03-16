@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aicloud-config
+  namespace: aicloud
+data:
+  # Common settings
+  NODE_ENV: "production"
+  
+  # Database connection
+  POSTGRES_HOST: "postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "aicloud_users"
+  
+  MONGODB_HOST: "mongodb"
+  MONGODB_PORT: "27017"
+  MONGODB_DB: "aicloud_storage"
+  
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  
+  # MinIO settings
+  MINIO_HOST: "minio"
+  MINIO_API_PORT: "9000"
+  MINIO_CONSOLE_PORT: "9001"
+  S3_BUCKET: "aicloud-storage"
+  
+  # Service URLs
+  USER_SERVICE_URL: "http://user-service:3001"
+  STORAGE_SERVICE_URL: "http://storage-service:3002"
+  AI_ORCHESTRATION_SERVICE_URL: "http://ai-orchestration:3003"
+  LLM_ASSISTANT_SERVICE_URL: "http://llm-assistant:3004"
+  
+  # Other settings
+  THUMBNAIL_SIZE: "300"
+  LOG_LEVEL: "info"
+  
+  # API frontend
+  API_BASE_URL: "https://api.aicloud.example.com"
