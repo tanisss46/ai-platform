@@ -1,12 +1,4 @@
-  @Post('login/2fa')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Complete login with two-factor authentication' })
-  @ApiResponse({ status: 200, description: 'Two-factor authentication successful', type: AuthResponseDto })
-  @ApiUnauthorizedResponse({ description: 'Invalid two-factor authentication code' })
-  async loginWith2fa(@Body() loginWith2faDto: LoginWith2faDto): Promise<AuthResponseDto> {
-    return this.authService.loginWith2fa(loginWith2faDto);
-  }
-import {
+  import {
   Controller,
   Post,
   Body,
@@ -52,6 +44,15 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto | AuthResponseWithTwoFactorDto> {
     return this.authService.login(loginDto);
+  }
+
+  @Post('login/2fa')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Complete login with two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'Two-factor authentication successful', type: AuthResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid two-factor authentication code' })
+  async loginWith2fa(@Body() loginWith2faDto: LoginWith2faDto): Promise<AuthResponseDto> {
+    return this.authService.loginWith2fa(loginWith2faDto);
   }
 
   @Get('refresh')

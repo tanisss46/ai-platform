@@ -1,33 +1,4 @@
-
-  /**
-   * Login with 2FA code after initial login
-   */
-  async loginWith2fa(loginWith2faDto: LoginWith2faDto): Promise<AuthResponseDto> {
-    const { userId, twoFactorCode } = loginWith2faDto;
-    
-    // Verify the 2FA code
-    try {
-      const isValid = await this.twoFactorAuthService.verifyTwoFactorAuthToken(userId, twoFactorCode);
-      
-      if (!isValid) {
-        throw new UnauthorizedException('Invalid two-factor authentication code');
-      }
-      
-      // Get the user
-      const user = await this.usersService.findById(userId);
-      
-      // Update last login timestamp
-      await this.usersService.updateLastLogin(user.id);
-      
-      // Generate a token and return auth response
-      return this.createAuthResponse(user);
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-      throw new UnauthorizedException('Invalid two-factor authentication code');
-    }
-  }import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -228,6 +199,36 @@ export class AuthService {
       }
       
       throw new InternalServerErrorException('Failed to reset password');
+    }
+  }
+
+  /**
+   * Login with 2FA code after initial login
+   */
+  async loginWith2fa(loginWith2faDto: LoginWith2faDto): Promise<AuthResponseDto> {
+    const { userId, twoFactorCode } = loginWith2faDto;
+    
+    // Verify the 2FA code
+    try {
+      const isValid = await this.twoFactorAuthService.verifyTwoFactorAuthToken(userId, twoFactorCode);
+      
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid two-factor authentication code');
+      }
+      
+      // Get the user
+      const user = await this.usersService.findById(userId);
+      
+      // Update last login timestamp
+      await this.usersService.updateLastLogin(user.id);
+      
+      // Generate a token and return auth response
+      return this.createAuthResponse(user);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Invalid two-factor authentication code');
     }
   }
 }
